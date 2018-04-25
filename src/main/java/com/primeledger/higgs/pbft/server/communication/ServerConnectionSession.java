@@ -16,6 +16,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class ServerConnectionSession extends Thread {
 
     private Socket socket = null;

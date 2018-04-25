@@ -9,6 +9,12 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class NodeInfo {
 
 

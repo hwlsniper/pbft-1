@@ -2,6 +2,11 @@ package com.primeledger.higgs.pbft.server.communication;
 
 import com.primeledger.higgs.pbft.common.message.BaseMessage;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 public interface MessageBroadcaster {
     void boadcastToServer(BaseMessage message);
 

@@ -3,6 +3,11 @@ package com.primeledger.higgs.pbft.client;
 import com.primeledger.higgs.pbft.common.message.BaseMessage;
 import io.netty.channel.Channel;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 public class C2SConnection {
 
     private int remoteId;

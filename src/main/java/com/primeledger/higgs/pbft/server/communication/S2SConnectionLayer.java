@@ -16,6 +16,11 @@ import java.net.SocketTimeoutException;
 import java.util.Hashtable;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 
 public class S2SConnectionLayer extends Thread {
 

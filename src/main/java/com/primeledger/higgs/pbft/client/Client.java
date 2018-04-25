@@ -25,6 +25,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 
 @ChannelHandler.Sharable
 public class Client extends SimpleChannelInboundHandler<BaseMessage> implements ISubmitConsensus {

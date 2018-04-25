@@ -4,7 +4,8 @@ import java.io.*;
 
 /**
  * @author hanson
- * recover from log
+ * @Date 2018/4/25
+ * @Description:
  */
 public class RecoverMessage extends BaseMessage {
 

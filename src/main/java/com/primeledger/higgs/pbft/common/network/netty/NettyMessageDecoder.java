@@ -7,6 +7,12 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.util.List;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class NettyMessageDecoder extends ByteToMessageDecoder{
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {

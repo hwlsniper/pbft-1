@@ -12,6 +12,11 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 public class ConsensusResolver extends Thread {
 
     private BlockingQueue<BaseMessage> inQueue;
@@ -92,7 +97,7 @@ public class ConsensusResolver extends Thread {
         myConsensus.setTimeStamp(consensus.getTimeStamp());
         myConsensus.setSender(controller.getMyId());
         consensus.setCp(controller.getHighCp());
-        ePoch.addCp(controller.getHighCp(), controller.getMyId());
+//        ePoch.addCp(controller.getHighCp(), controller.getMyId());
         byte[] serial = myConsensus.getSerializeMessage();
         byte[] signature = MessageUtils.signMessage(controller.getPrivateKey(), serial);
         myConsensus.setSignature(signature);
@@ -114,7 +119,7 @@ public class ConsensusResolver extends Thread {
         }
         ePoch.addPrepareDigest(consensus.getDigest(), consensus.getSender());
         ePoch.setLastProcessTime(System.currentTimeMillis());
-        ePoch.addCp(consensus.getCp(), consensus.getSender());
+//        ePoch.addCp(consensus.getCp(), consensus.getSender());
         if (!ePoch.isPrepare() && ePoch.countPrepare() >= controller.getPrepareQuarum()) {
             ConsensusMessage myConsensus = new ConsensusMessage();
             myConsensus.setSender(controller.getMyId());
@@ -167,8 +172,8 @@ public class ConsensusResolver extends Thread {
                 stateQueu.offer(state);
                 Object obj = MessageUtils.byteToObj(request);
                 controller.setHaveMsgProcess(false);
+                System.out.println("node " + controller.getMyId() + " receive " + obj + " high check point:" + controller.getHighCp() +" current consensus cp:" + ePoch.getConsensusCp());
                 controller.notifyLastConsensusFinish();
-                System.out.println("node " + controller.getMyId() + " receive " + obj + " high check point:" + controller.getHighCp() + " max count of check point:" + ePoch.getMaxSameCp() + " cp:" + ePoch.getConsensusCp());
 
             } catch (IOException e) {
                 e.printStackTrace();

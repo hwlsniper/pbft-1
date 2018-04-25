@@ -17,6 +17,12 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 @SpringBootApplication
 @Controller
 public class PBFTAlgorithm {

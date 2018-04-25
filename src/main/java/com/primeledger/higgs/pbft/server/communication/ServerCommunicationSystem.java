@@ -11,6 +11,8 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * @author hanson
+ * @Date 2018/4/25
+ * @Description:
  */
 public class ServerCommunicationSystem extends Thread implements MessageBroadcaster {
 

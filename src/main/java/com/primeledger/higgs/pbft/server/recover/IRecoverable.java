@@ -3,6 +3,12 @@ package com.primeledger.higgs.pbft.server.recover;
 import com.primeledger.higgs.pbft.common.message.RecoverMessage;
 import com.primeledger.higgs.pbft.common.message.StateLog;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public interface IRecoverable {
     /**
      * if this node didn't catch up the current log

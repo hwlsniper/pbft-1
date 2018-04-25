@@ -6,6 +6,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class RequestMessage extends BaseMessage {
 
     /**

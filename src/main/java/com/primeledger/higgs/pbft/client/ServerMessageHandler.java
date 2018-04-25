@@ -5,6 +5,13 @@ import com.primeledger.higgs.pbft.common.message.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class ServerMessageHandler extends SimpleChannelInboundHandler<BaseMessage> {
 
     @Override

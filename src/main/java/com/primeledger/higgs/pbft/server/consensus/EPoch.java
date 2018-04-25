@@ -5,6 +5,12 @@ import com.primeledger.higgs.pbft.server.main.ServerViewController;
 import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class EPoch {
 
     /**

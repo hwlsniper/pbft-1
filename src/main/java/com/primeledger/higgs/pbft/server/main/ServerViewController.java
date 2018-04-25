@@ -10,6 +10,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class ServerViewController {
 
     private Config config;
@@ -59,7 +65,7 @@ public class ServerViewController {
     public void initStableCp(int cp) {
         System.out.println("init stable check point:" + cp);
         stableCp.set(cp);
-        highCp.set(cp + 1);
+        highCp.set(cp+1);
     }
 
     public int incHighCp() {

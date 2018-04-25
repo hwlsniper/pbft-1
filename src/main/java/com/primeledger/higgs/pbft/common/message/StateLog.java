@@ -2,6 +2,12 @@ package com.primeledger.higgs.pbft.common.message;
 
 import java.io.*;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class StateLog implements Externalizable {
 
     private int cp;

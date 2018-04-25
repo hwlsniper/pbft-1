@@ -15,6 +15,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 public class ClientMessagerResolver extends Thread {
 
     private BlockingQueue<BaseMessage> outQueue = null;
@@ -77,7 +82,7 @@ public class ClientMessagerResolver extends Thread {
                     if (controller.amITheLeader()) {
                         if(controller.isHaveMsgProcess()){
                             messageLock.lock();
-                            canPrepare.await(1000L,TimeUnit.MILLISECONDS);
+                            canPrepare.await(3000L,TimeUnit.MILLISECONDS);
                             messageLock.unlock();
                         }
                         controller.setHaveMsgProcess(true);

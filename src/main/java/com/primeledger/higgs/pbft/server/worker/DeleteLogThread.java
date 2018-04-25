@@ -2,6 +2,12 @@ package com.primeledger.higgs.pbft.server.worker;
 
 import com.primeledger.higgs.pbft.server.log.ILogState;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class DeleteLogThread extends Thread {
 
     private ILogState iLogState = null;

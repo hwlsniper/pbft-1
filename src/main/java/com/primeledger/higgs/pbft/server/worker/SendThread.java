@@ -7,6 +7,12 @@ import com.primeledger.higgs.pbft.server.communication.MessageBroadcaster;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class SendThread extends Thread {
 
     private BlockingQueue<BaseMessage> outQueue = null;

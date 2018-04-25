@@ -1,5 +1,12 @@
 package com.primeledger.higgs.pbft.common.utils;
 
+
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class CommonUtil {
     public static byte[] intToBytes(int value) {
         byte[] src = new byte[4];

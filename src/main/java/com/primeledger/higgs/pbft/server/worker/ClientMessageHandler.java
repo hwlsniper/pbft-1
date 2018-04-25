@@ -9,6 +9,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.BlockingQueue;
 
+
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 @ChannelHandler.Sharable
 public class ClientMessageHandler extends SimpleChannelInboundHandler<BaseMessage> {
 

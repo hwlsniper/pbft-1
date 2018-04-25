@@ -2,6 +2,12 @@ package com.primeledger.higgs.pbft.server.log;
 
 import com.primeledger.higgs.pbft.common.message.StateLog;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public interface ILogState {
     /**
      * this function is to get the stable check point

@@ -21,6 +21,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 
 public class Replica implements IRecoverable {
 

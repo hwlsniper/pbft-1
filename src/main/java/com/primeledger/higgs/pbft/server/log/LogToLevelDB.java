@@ -10,6 +10,13 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import java.io.File;
 import java.io.IOException;
 
+
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class LogToLevelDB implements ILogState {
 
     DB db = null;
@@ -30,7 +37,7 @@ public class LogToLevelDB implements ILogState {
     public int getStableCp() {
         byte[] b = db.get("stableCp".getBytes());
         if (b == null) {
-            return 0;
+            return -1;
         } else {
             return CommonUtil.bytesToInt(b);
         }
@@ -50,6 +57,7 @@ public class LogToLevelDB implements ILogState {
 
     @Override
     public StateLog[] getStateLog(int start, int end) {
+        if(start > end) return null;
         StateLog[] stateLogs = new StateLog[end - start + 1];
         for (int i = 0; i < stateLogs.length; i++) {
             stateLogs[i] = new StateLog();

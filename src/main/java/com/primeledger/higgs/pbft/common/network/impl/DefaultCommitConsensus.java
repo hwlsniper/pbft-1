@@ -6,6 +6,12 @@ import com.primeledger.higgs.pbft.common.utils.MessageUtils;
 
 import java.io.IOException;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class DefaultCommitConsensus implements ICommitConsensus<byte[]>{
 
     @Override

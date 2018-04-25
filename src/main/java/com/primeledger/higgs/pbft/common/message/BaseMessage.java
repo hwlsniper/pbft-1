@@ -4,6 +4,12 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.*;
 
+
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
 public class BaseMessage implements Externalizable{
 
     protected byte[] signature;

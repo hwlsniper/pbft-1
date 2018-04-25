@@ -5,6 +5,12 @@ import io.netty.handler.codec.base64.Base64Encoder;
 import java.io.*;
 import java.security.*;
 
+/**
+ * @author hanson
+ * @Date 2018/4/25
+ * @Description:
+ */
+
 public class MessageUtils {
 
     /**
