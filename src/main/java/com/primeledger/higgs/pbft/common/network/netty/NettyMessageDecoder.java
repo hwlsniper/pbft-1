@@ -18,7 +18,7 @@ public class NettyMessageDecoder extends ByteToMessageDecoder{
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
 
         int n = byteBuf.readableBytes();
-        if(n < 10){
+        if(n < 4){
             return;
         }
 //        int dataLength = byteBuf.getInt(byteBuf.readerIndex());

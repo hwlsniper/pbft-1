@@ -136,6 +136,7 @@ public class ConsensusMessage extends BaseMessage {
 //        outputStream.write(request);
     }
 
+    @Override
     public byte[] getSerializeMessage() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(bos);

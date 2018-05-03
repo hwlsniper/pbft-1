@@ -31,6 +31,7 @@ public class ConsensusResolver extends Thread {
 
 
     public ConsensusResolver(ConsensusManager consensusManager, ServerViewController controller, BlockingQueue<BaseMessage> inQueue, MessageBroadcaster messageBroadcaster, BlockingQueue<StateLog> stateQueu) {
+        super("process-consensus");
         this.inQueue = inQueue;
         this.messageBroadcaster = messageBroadcaster;
         this.controller = controller;
@@ -38,32 +39,59 @@ public class ConsensusResolver extends Thread {
         this.stateQueu = stateQueu;
     }
 
+    @Override
     public void run() {
         while (true) {
-            BaseMessage message = null;
+            ConsensusMessage message = null;
             try {
                 message = (ConsensusMessage) inQueue.poll(100, TimeUnit.MICROSECONDS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 continue;
             }
-            if (message == null) continue;
+            if (message == null) {
+                continue;
+            }
 
             boolean verify = MessageUtils.verifySignature(controller.getPublicKey(message.getSender()), message.getSerializeMessage(), message.getSignature());
             if (!verify) {
                 System.out.println("invalid signature from server:" + message.getSender());
                 continue;
             }
+            System.out.println("receive message " + message.getType() + " from " + message.getSender() + " height " + message.getCp());
+            EPoch ePoch = consensusManager.getEPoch(message.getClientId(), message.getTimeStamp(), false);
+            int cnt = 0;
+            while (ePoch == null) {
+                System.out.println("ePoch has not been created,waiting to be created!timestamp:" + message.getTimeStamp());
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ePoch = consensusManager.getEPoch(message.getClientId(), message.getTimeStamp(), false);
+                cnt++;
+                if (cnt > 5) {
+                    break;
+                }
+                continue;
+            }
+//            if (ePoch.isCommit()) {
+//                continue;
+//            }
+            if (cnt > 5) {
+                continue;
+            }
             switch (message.getType()) {
+
                 case PRE_PREPARE:
-                    dealPrePrepare(message);
+                    dealPrePrepare(message, ePoch);
 
                     break;
                 case PREPARE:
-                    dealPrepare(message);
+                    dealPrepare(message, ePoch);
                     break;
                 case COMMIT:
-                    dealCommit(message);
+                    dealCommit(message, ePoch);
                     break;
                 default:
                     System.out.println("INVALID MESSAGE TYPE!");
@@ -74,18 +102,20 @@ public class ConsensusResolver extends Thread {
 
     /**
      * pre-prepare stage in pbft
+     *
      * @param message
      */
-    public void dealPrePrepare(BaseMessage message) {
+    public void dealPrePrepare(BaseMessage message, EPoch ePoch) {
         ConsensusMessage consensus = (ConsensusMessage) message;
         if (consensus.getSender() != controller.getCurrentLeader()) {
             return;
         }
 
-        EPoch ePoch = consensusManager.getEPoch(consensus.getClientId(), consensus.getTimeStamp());
-        if(ePoch == null){
-            return;
-        }
+//        EPoch ePoch = consensusManager.getEPoch(consensus.getClientId(), consensus.getTimeStamp(), false);
+//        while (ePoch == null) {
+//            ePochNull();
+//            continue;
+//        }
         ePoch.addPrepareDigest(consensus.getDigest(), consensus.getSender());
 
         ConsensusMessage myConsensus = new ConsensusMessage();
@@ -96,8 +126,7 @@ public class ConsensusResolver extends Thread {
         myConsensus.setClientId(consensus.getClientId());
         myConsensus.setTimeStamp(consensus.getTimeStamp());
         myConsensus.setSender(controller.getMyId());
-        consensus.setCp(controller.getHighCp());
-//        ePoch.addCp(controller.getHighCp(), controller.getMyId());
+        myConsensus.setCp(controller.getHighCp());
         byte[] serial = myConsensus.getSerializeMessage();
         byte[] signature = MessageUtils.signMessage(controller.getPrivateKey(), serial);
         myConsensus.setSignature(signature);
@@ -107,19 +136,17 @@ public class ConsensusResolver extends Thread {
 
     /**
      * prepare stage in pbft
+     *
      * @param message
      */
-    public void dealPrepare(BaseMessage message) {
-//        System.out.println(controller.getMyId()+":receive prepare message from:"+message.getSender());
-
+    public void dealPrepare(BaseMessage message, EPoch ePoch) {
         ConsensusMessage consensus = (ConsensusMessage) message;
-        EPoch ePoch = consensusManager.getEPoch(consensus.getClientId(), consensus.getTimeStamp());
-        if(ePoch == null){
-            return;
-        }
+//        EPoch ePoch = consensusManager.getEPoch(consensus.getClientId(), consensus.getTimeStamp(), false);
+//        int cnt = 0;
+
         ePoch.addPrepareDigest(consensus.getDigest(), consensus.getSender());
         ePoch.setLastProcessTime(System.currentTimeMillis());
-//        ePoch.addCp(consensus.getCp(), consensus.getSender());
+
         if (!ePoch.isPrepare() && ePoch.countPrepare() >= controller.getPrepareQuarum()) {
             ConsensusMessage myConsensus = new ConsensusMessage();
             myConsensus.setSender(controller.getMyId());
@@ -137,6 +164,7 @@ public class ConsensusResolver extends Thread {
             myConsensus.setSignature(signature);
 
             messageBroadcaster.boadcastToServer(myConsensus);
+            System.out.println("send commit message to other node!height:" + myConsensus.getCp());
             ePoch.setPrepare(true);
         }
 
@@ -144,14 +172,11 @@ public class ConsensusResolver extends Thread {
 
     /**
      * commit stage in pbft
+     *
      * @param message
      */
-    public void dealCommit(BaseMessage message) {
+    public void dealCommit(BaseMessage message, EPoch ePoch) {
         ConsensusMessage consensus = (ConsensusMessage) message;
-        EPoch ePoch = consensusManager.getEPoch(consensus.getClientId(), consensus.getTimeStamp());
-        if(ePoch == null){
-            return;
-        }
         ePoch.addCommitDigest(consensus.getDigest(), consensus.getSender());
         ePoch.setLastProcessTime(System.currentTimeMillis());
         ePoch.addCp(consensus.getCp(), consensus.getSender());
@@ -172,7 +197,7 @@ public class ConsensusResolver extends Thread {
                 stateQueu.offer(state);
                 Object obj = MessageUtils.byteToObj(request);
                 controller.setHaveMsgProcess(false);
-                System.out.println("node " + controller.getMyId() + " receive " + obj + " high check point:" + controller.getHighCp() +" current consensus cp:" + ePoch.getConsensusCp());
+                System.out.println("end.consensus content " + obj + " high check point:" + controller.getHighCp() + " current consensus cp:" + ePoch.getConsensusCp());
                 controller.notifyLastConsensusFinish();
 
             } catch (IOException e) {
@@ -184,5 +209,4 @@ public class ConsensusResolver extends Thread {
 
         }
     }
-
 }

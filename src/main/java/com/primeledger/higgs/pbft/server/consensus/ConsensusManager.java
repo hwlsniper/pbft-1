@@ -43,7 +43,7 @@ public class ConsensusManager {
         clientRequestTimeStamp = new HashMap<>();
     }
 
-    public EPoch getEPoch(int client, long timeStamp) {
+    public EPoch getEPoch(int client, long timeStamp, boolean create) {
         rw.writeLock().lock();
         Map<Long, EPoch> map = consensusMap.get(client);
 
@@ -53,7 +53,7 @@ public class ConsensusManager {
         }
         EPoch epoch = map.get(timeStamp);
 
-        if (epoch == null) {
+        if (epoch == null && create) {
             Long lastTime = clientRequestTimeStamp.get(client);
             if (lastTime != null) {
                 if (lastTime > timeStamp) {

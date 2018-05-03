@@ -5,10 +5,11 @@ import com.primeledger.higgs.pbft.common.message.ConsensusMessage;
 import com.primeledger.higgs.pbft.common.message.MessageType;
 import com.primeledger.higgs.pbft.common.message.RequestMessage;
 import com.primeledger.higgs.pbft.common.utils.MessageUtils;
-import com.primeledger.higgs.pbft.server.main.ServerViewController;
 import com.primeledger.higgs.pbft.server.consensus.ConsensusManager;
 import com.primeledger.higgs.pbft.server.consensus.EPoch;
+import com.primeledger.higgs.pbft.server.main.ServerViewController;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -37,23 +38,24 @@ public class ClientMessagerResolver extends Thread {
     private ConsensusManager consensusManager = null;
 
     public ClientMessagerResolver(ConsensusManager consensusManager, BlockingQueue<BaseMessage> outQueue, BlockingQueue<BaseMessage> requestQueue, ServerViewController controller) {
+        super("start-consensus");
+
         this.outQueue = outQueue;
         this.requestQueue = requestQueue;
         this.controller = controller;
         this.consensusManager = consensusManager;
-        controller.setCanPrepare(messageLock,canPrepare);
+        controller.setCanPrepare(messageLock, canPrepare);
     }
 
     @Override
     public void run() {
         while (doWork) {
             try {
-                BaseMessage message = requestQueue.poll(1000, TimeUnit.MILLISECONDS);
+                BaseMessage message = requestQueue.poll(100, TimeUnit.MILLISECONDS);
                 if (message == null) {
                     continue;
                 }
 
-//                controller.isHaveMsgProcess();
 
                 if (message.getType() == MessageType.REQUEST) {
                     RequestMessage request = (RequestMessage) message;
@@ -63,11 +65,10 @@ public class ClientMessagerResolver extends Thread {
                         System.out.println("invalid signature from client:" + request.getSender());
                         return;
                     }
-                    //am I the leader?
-                    EPoch ePoch = consensusManager.getEPoch(request.getSender(), request.getTimeaStamp());
-                    if(ePoch == null){
-                        continue;
-                    }
+                    System.out.println("receive command " + MessageUtils.byteToObj(request.getOperation()) + "timestamp:" + request.getTimeaStamp());
+
+                    EPoch ePoch = consensusManager.getEPoch(request.getSender(), request.getTimeaStamp(), true);
+
                     byte requestSeriaize[] = request.getSerializeMessage();
                     byte[] digest = MessageUtils.computeDigest(requestSeriaize);
                     ePoch.setClientId(request.getSender());
@@ -78,15 +79,15 @@ public class ClientMessagerResolver extends Thread {
                     ePoch.setRequest(request.getOperation());
                     ePoch.setView(controller.getCurrentView());
 
-
+                    //am I the leader?
                     if (controller.amITheLeader()) {
-                        if(controller.isHaveMsgProcess()){
+                        while (controller.isHaveMsgProcess()) {
                             messageLock.lock();
-                            canPrepare.await(3000L,TimeUnit.MILLISECONDS);
+                            canPrepare.await(3000L, TimeUnit.MILLISECONDS);
                             messageLock.unlock();
                         }
+                        System.out.println("start consensus height:" + controller.getHighCp());
                         controller.setHaveMsgProcess(true);
-//                        controller.setHaveMsgProcess();
                         ConsensusMessage consensusMessage = new ConsensusMessage();
                         consensusMessage.setSender(controller.getMyId());
                         consensusMessage.setType(MessageType.PRE_PREPARE);
@@ -108,6 +109,10 @@ public class ClientMessagerResolver extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

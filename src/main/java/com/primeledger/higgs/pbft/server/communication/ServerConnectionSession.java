@@ -88,16 +88,15 @@ public class ServerConnectionSession extends Thread {
 
     public void send(BaseMessage message) {
         if (socket == null || outputStream == null || !socket.isConnected()) {
+            System.out.println("the socket is disconnected!");
             closeSocket();
             reconnect(null);
             return;
         }
         try {
-//            message.write(outputStream);
             byte[] data = MessageUtils.objToBytes(message);
             outputStream.writeInt(data.length);
             outputStream.write(data);
-            outputStream.flush();
         } catch (IOException e) {
             System.out.println("--------send message failed----------");
             e.printStackTrace();
@@ -121,7 +120,6 @@ public class ServerConnectionSession extends Thread {
         while (doWork) {
             if (socket != null && inputStream != null) {
                 try {
-//                int sender = inputStream.readInt();
                     int length = inputStream.readInt();
                     byte[] data = new byte[length];
 
@@ -131,41 +129,15 @@ public class ServerConnectionSession extends Thread {
                     }while(read < length);
                     Object obj = MessageUtils.byteToObj(data);
                     if(obj instanceof ConsensusMessage){
-                        inQueue.offer((ConsensusMessage)obj);
+                        if(!inQueue.offer((ConsensusMessage)obj)){
+                            System.out.println("consensus inQueue is full");
+                        }
                     }else if(obj instanceof  RecoverMessage){
                         recoverable.recover((RecoverMessage)obj);
                     }else{
                         System.out.println("error!");
                     }
-//                    int t = inputStream.readInt();
-//
-//                    if (t < 0 || t > MessageType.values().length) {
-//                        inputStream.reset();
-//                    }
-//                    MessageType type = MessageType.values()[t];
-//                    switch (type) {
-//                        case COMMIT:
-//                        case PREPARE:
-//                        case PRE_PREPARE:
-//                            ConsensusMessage consensusMessage = new ConsensusMessage();
-//                            consensusMessage.read(inputStream);
-//                            consensusMessage.setType(type);
-//                            inQueue.offer(consensusMessage);
-//                            break;
-//                        case BACK_SYC_LOG:
-//                        case ASK_SYN_LOG:
-//                            RecoverMessage recoverMessage = new RecoverMessage();
-//                            recoverMessage.setType(type);
-//                            recoverMessage.read(inputStream);
-//                            recoverable.recover(recoverMessage);
-//                            break;
-//                        default:
-//                            System.out.println("did not support message Type");
-//                            break;
-//                    }
 
-
-//                System.out.println(sender);
                 } catch (IOException e) {
                     System.out.println("---------------read received message from " + remoteId + " error!-------------");
                     closeSocket();
@@ -221,7 +193,6 @@ public class ServerConnectionSession extends Thread {
                     System.out.println("success connect to " + nodeInfo.getId());
                 } catch (IOException e) {
                     System.out.println("import possible connect to " + nodeInfo.getId());
-//                    e.printStackTrace();
                 }
             } else {
                 socket = newSocket;

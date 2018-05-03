@@ -56,10 +56,11 @@ public class RequestMessage extends BaseMessage {
         timeaStamp = byteBuf.readLong();
 
         int opLength = byteBuf.readInt();
+        int signLength = byteBuf.readInt();
+
         operation = new byte[opLength];
         byteBuf.readBytes(operation);
 
-        int signLength = byteBuf.readInt();
         signature = new byte[signLength];
         byteBuf.readBytes(signature);
     }
@@ -70,9 +71,9 @@ public class RequestMessage extends BaseMessage {
         byteBuf.writeLong(timeaStamp);
 
         byteBuf.writeInt(operation.length);
-        byteBuf.writeBytes(operation);
-
         byteBuf.writeInt(signature.length);
+
+        byteBuf.writeBytes(operation);
         byteBuf.writeBytes(signature);
     }
 

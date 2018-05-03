@@ -8,7 +8,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * @author hanson
  * @Date 2018/4/25
- * @Description:
+ * @Description: this class create a new object
+ * when start a new consensus
  */
 
 public class EPoch {
@@ -97,7 +98,6 @@ public class EPoch {
     }
 
     public int countPrepare() {
-        //TODO if need a read lock
         rw.readLock().lock();
         int cnt =  count(prepareDigest, myDigest);
         rw.readLock().unlock();
@@ -105,7 +105,6 @@ public class EPoch {
     }
 
     public int countCommit() {
-        //TODO if need a read lock
         rw.readLock().lock();
         int cnt = count(commitDigest, myDigest);
         rw.readLock().unlock();
@@ -211,6 +210,9 @@ public class EPoch {
     }
 
     public void addCommitDigest(byte[] digest, int sender) {
+        if(sender > controller.getCurrentViewN()){
+            return;
+        }
         rw.writeLock().lock();
         commitDigest[sender] = Arrays.copyOf(digest,digest.length);
         rw.writeLock().unlock();
@@ -242,6 +244,11 @@ public class EPoch {
     }
 
     public void addCp(int cp, int n) {
+        //TODO if the send
+        if(n > controller.getCurrentViewN()){
+            System.out.println("sender is out of bound");
+            return;
+        }
         rw.writeLock().lock();
         this.cp[n] = cp;
         rw.writeLock().unlock();

@@ -21,6 +21,7 @@ public class SendThread extends Thread {
     private boolean doWork = true;
 
     public SendThread(BlockingQueue<BaseMessage> outQueue,ServerViewController controller,MessageBroadcaster broadcaster){
+        super("consensus-message-sender");
         this.outQueue = outQueue;
         this.controller = controller;
         this.broadcaster = broadcaster;

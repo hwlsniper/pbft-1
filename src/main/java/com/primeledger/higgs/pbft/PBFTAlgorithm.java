@@ -31,6 +31,8 @@ public class PBFTAlgorithm {
     @Autowired
     Config config;
 
+    Replica myReplica = null;
+
 //    private int id;
 
     private List<Replica> replicas;
@@ -59,6 +61,16 @@ public class PBFTAlgorithm {
         return "success generate replica:" + c.getId();
     }
 
+    @RequestMapping("/startReplica")
+    @ResponseBody
+    public String startReplica() {
+        if (myReplica == null) {
+            config.setLogPath(config.getLogPath() + "/" + config.getId());
+            myReplica = new Replica(config);
+        }
+        return "start replica success";
+    }
+
     @RequestMapping("/testCons")
     @ResponseBody
     public String testCons(String command) {
@@ -69,6 +81,25 @@ public class PBFTAlgorithm {
         try {
             client.postTask(command);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "post task success!";
+    }
+
+    @RequestMapping("/testLoop")
+    @ResponseBody
+    public String testLoop(int times,int sleep) {
+        if (client == null) {
+            client = new Client(config);
+        }
+        try {
+            for (int i = 0; i < times; i++) {
+                client.postTask("test" + i);
+                Thread.sleep((long)sleep);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return "post task success!";
@@ -88,7 +119,9 @@ public class PBFTAlgorithm {
     }
 
     public static void main(String args[]) {
-        id = Integer.parseInt(args[0]);
+        if (args.length > 0) {
+            id = Integer.parseInt(args[0]);
+        }
         SpringApplication.run(PBFTAlgorithm.class, args);
     }
 }

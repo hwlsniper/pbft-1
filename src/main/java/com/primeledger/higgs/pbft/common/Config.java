@@ -194,6 +194,9 @@ public class Config {
     }
 
     public String getLogPath() {
+        if(logPath == null||"".equalsIgnoreCase(logPath)){
+            logPath = System.getProperty("user.dir")+"/log";
+        }
         return logPath;
     }
 

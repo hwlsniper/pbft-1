@@ -154,7 +154,9 @@ public class ServerViewController {
 
 
     public void setHaveMsgProcess(boolean isHave) {
+        lock.lock();
         haveMsgProcess = isHave;
+        lock.unlock();
     }
 
     public void notifyLastConsensusFinish(){

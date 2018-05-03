@@ -25,7 +25,7 @@ public class ClientTest extends AbstractTestNGSpringContextTests {
         System.out.println("start time " + start);
         for (int i = 0; i < 100000; i++) {
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
                 String command = "test" + i;
                 client.postTask(command);
                 System.out.println("send command " + command);
