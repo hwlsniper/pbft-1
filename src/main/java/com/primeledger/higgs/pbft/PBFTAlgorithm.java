@@ -88,14 +88,14 @@ public class PBFTAlgorithm {
 
     @RequestMapping("/testLoop")
     @ResponseBody
-    public String testLoop(int times,int sleep) {
+    public String testLoop(int times, int sleep) {
         if (client == null) {
             client = new Client(config);
         }
         try {
             for (int i = 0; i < times; i++) {
                 client.postTask("test" + i);
-                Thread.sleep((long)sleep);
+                Thread.sleep((long) sleep);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -75,9 +75,7 @@ public class ConsensusResolver extends Thread {
                 }
                 continue;
             }
-//            if (ePoch.isCommit()) {
-//                continue;
-//            }
+
             if (cnt > 5) {
                 continue;
             }
@@ -111,11 +109,6 @@ public class ConsensusResolver extends Thread {
             return;
         }
 
-//        EPoch ePoch = consensusManager.getEPoch(consensus.getClientId(), consensus.getTimeStamp(), false);
-//        while (ePoch == null) {
-//            ePochNull();
-//            continue;
-//        }
         ePoch.addPrepareDigest(consensus.getDigest(), consensus.getSender());
 
         ConsensusMessage myConsensus = new ConsensusMessage();
@@ -126,7 +119,7 @@ public class ConsensusResolver extends Thread {
         myConsensus.setClientId(consensus.getClientId());
         myConsensus.setTimeStamp(consensus.getTimeStamp());
         myConsensus.setSender(controller.getMyId());
-        myConsensus.setCp(controller.getHighCp());
+        myConsensus.setCp(ePoch.getCheckPoint());
         byte[] serial = myConsensus.getSerializeMessage();
         byte[] signature = MessageUtils.signMessage(controller.getPrivateKey(), serial);
         myConsensus.setSignature(signature);
@@ -157,8 +150,8 @@ public class ConsensusResolver extends Thread {
             myConsensus.setSequnce(consensus.getSequnce());
             myConsensus.setView(controller.getCurrentView());
             myConsensus.setDigest(ePoch.getMyDigest());
-            myConsensus.setCp(controller.getHighCp());
-            ePoch.addCp(controller.getHighCp(), controller.getMyId());
+            myConsensus.setCp(ePoch.getCheckPoint());
+            ePoch.addCp(ePoch.getCheckPoint(), controller.getMyId());
             byte[] serial = myConsensus.getSerializeMessage();
             byte[] signature = MessageUtils.signMessage(controller.getPrivateKey(), serial);
             myConsensus.setSignature(signature);
@@ -190,14 +183,14 @@ public class ConsensusResolver extends Thread {
                 state.setCp(ePoch.getConsensusCp());
                 state.setOperation(request);
 
-                if (controller.getHighCp() < ePoch.getConsensusCp()) {
-                    controller.setHighCp(ePoch.getConsensusCp());
-                }
-                controller.incHighCp();
+//                if (controller.getHighCp() < ePoch.getConsensusCp()) {
+//                    controller.setHighCp(ePoch.getConsensusCp());
+//                }
+//                controller.incHighCp();
                 stateQueu.offer(state);
                 Object obj = MessageUtils.byteToObj(request);
-                controller.setHaveMsgProcess(false);
                 System.out.println("end.consensus content " + obj + " high check point:" + controller.getHighCp() + " current consensus cp:" + ePoch.getConsensusCp());
+                controller.setHaveMsgProcess(false);
                 controller.notifyLastConsensusFinish();
 
             } catch (IOException e) {

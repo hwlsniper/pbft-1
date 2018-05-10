@@ -65,7 +65,7 @@ public class ClientMessagerResolver extends Thread {
                         System.out.println("invalid signature from client:" + request.getSender());
                         return;
                     }
-                    System.out.println("receive command " + MessageUtils.byteToObj(request.getOperation()) + "timestamp:" + request.getTimeaStamp());
+                    System.out.println("receive command " + MessageUtils.byteToObj(request.getOperation()) + " timestamp:" + request.getTimeaStamp());
 
                     EPoch ePoch = consensusManager.getEPoch(request.getSender(), request.getTimeaStamp(), true);
 
@@ -78,6 +78,9 @@ public class ClientMessagerResolver extends Thread {
                     ePoch.addPrepareDigest(digest, controller.getMyId());
                     ePoch.setRequest(request.getOperation());
                     ePoch.setView(controller.getCurrentView());
+                    ePoch.setCheckPoint(controller.getHighCp());
+                    controller.incHighCp();
+
 
                     //am I the leader?
                     if (controller.amITheLeader()) {
@@ -86,7 +89,7 @@ public class ClientMessagerResolver extends Thread {
                             canPrepare.await(3000L, TimeUnit.MILLISECONDS);
                             messageLock.unlock();
                         }
-                        System.out.println("start consensus height:" + controller.getHighCp());
+                        System.out.println("start consensus height:" + ePoch.getCheckPoint());
                         controller.setHaveMsgProcess(true);
                         ConsensusMessage consensusMessage = new ConsensusMessage();
                         consensusMessage.setSender(controller.getMyId());
@@ -95,7 +98,7 @@ public class ClientMessagerResolver extends Thread {
                         consensusMessage.setTimeStamp(request.getTimeaStamp());
                         consensusMessage.setClientId(request.getSender());
 
-                        consensusMessage.setCp(controller.getHighCp());
+                        consensusMessage.setCp(ePoch.getCheckPoint());
                         consensusMessage.setRequest(requestSeriaize);
 
                         consensusMessage.setDigest(digest);

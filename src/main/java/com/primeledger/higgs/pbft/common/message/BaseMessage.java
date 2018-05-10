@@ -67,7 +67,7 @@ public class BaseMessage implements Externalizable{
         sender = byteBuf.readInt();
     }
 
-    public void write(ByteBuf byteBuf) {
+    public void write(ByteBuf byteBuf) throws IOException {
         byteBuf.writeInt(type.ordinal());
         byteBuf.writeInt(sender);
     }

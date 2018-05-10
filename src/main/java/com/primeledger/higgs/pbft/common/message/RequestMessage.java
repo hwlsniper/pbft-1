@@ -2,6 +2,7 @@ package com.primeledger.higgs.pbft.common.message;
 
 import io.netty.buffer.ByteBuf;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -66,15 +67,35 @@ public class RequestMessage extends BaseMessage {
     }
 
     @Override
-    public void write(ByteBuf byteBuf){
-        super.write(byteBuf);
-        byteBuf.writeLong(timeaStamp);
+    public void write(ByteBuf byteBuf) throws IOException {
+//        super.write(byteBuf);
+//        byteBuf.writeLong(timeaStamp);
+//
+//        byteBuf.writeInt(operation.length);
+//        byteBuf.writeInt(signature.length);
+//
+//        byteBuf.writeBytes(operation);
+//        byteBuf.writeBytes(signature);
+        byte[] data = getData();
+        byteBuf.writeInt(data.length);
+        byteBuf.writeBytes(data);
 
-        byteBuf.writeInt(operation.length);
-        byteBuf.writeInt(signature.length);
+    }
 
-        byteBuf.writeBytes(operation);
-        byteBuf.writeBytes(signature);
+    public byte[] getData() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(bos);
+        super.write(dos);
+        dos.writeLong(timeaStamp);
+
+        dos.writeInt(operation.length);
+        dos.writeInt(signature.length);
+
+        dos.write(operation);
+        dos.write(signature);
+
+        byte[] data = bos.toByteArray();
+        return data;
     }
 
     @Override

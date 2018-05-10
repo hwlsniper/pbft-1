@@ -40,7 +40,7 @@ public class ClientMessageHandler extends SimpleChannelInboundHandler<BaseMessag
         if(cause instanceof ClosedChannelException){
             System.out.println("Connection with client closed");
         }else{
-            System.out.println(cause);
+            cause.printStackTrace();
         }
     }
 }

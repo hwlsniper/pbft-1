@@ -62,9 +62,10 @@ public class ConsensusManager {
                     Long[] t = (Long[]) map.keySet().toArray();
                     for (Long l : t) {
                         EPoch e = map.get(l);
-                        if (l + 2000L < lastTime && e != null && e.isCommit()) {
-
+                        if (l < lastTime && e != null && e.isCommit()) {
                             map.remove(l);
+                            e = null;
+                            l = null;
                         }
                     }
                     map.remove(lastTime);

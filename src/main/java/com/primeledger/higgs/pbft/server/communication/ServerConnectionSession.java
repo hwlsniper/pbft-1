@@ -209,5 +209,16 @@ public class ServerConnectionSession extends Thread {
         connectLck.unlock();
     }
 
+    public class SendThread extends Thread{
+        public SendThread(){
+
+        }
+
+        @Override
+        public void run(){
+
+        }
+    }
+
 
 }

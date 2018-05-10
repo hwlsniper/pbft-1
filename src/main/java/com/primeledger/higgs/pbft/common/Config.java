@@ -42,7 +42,7 @@ public class Config {
     /**
      * 入队列大小，默认200
      */
-    private int inQueueSize = 1000;
+    private int inQueueSize = 10000;
 
 
     /**
@@ -53,7 +53,7 @@ public class Config {
     /**
      * the size of client request queue
      */
-    private int requestQueueSize = 1000;
+    private int requestQueueSize = 10000;
 
     /**
      * the private key string of this node

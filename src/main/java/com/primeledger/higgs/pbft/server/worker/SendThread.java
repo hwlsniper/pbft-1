@@ -36,6 +36,7 @@ public class SendThread extends Thread {
                    continue;
                 }
                 broadcaster.boadcastToServer(message);
+                message = null;
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 continue;

@@ -13,16 +13,21 @@ import java.util.List;
  * @Description:
  */
 
-public class NettyMessageDecoder extends ByteToMessageDecoder{
+public class NettyMessageDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
 
-        int n = byteBuf.readableBytes();
-        if(n < 4){
+        if (byteBuf.readableBytes() < 4) {
             return;
         }
-//        int dataLength = byteBuf.getInt(byteBuf.readerIndex());
-//        if(byteBuf.readableBytes() < dataLength +4) return;
+
+        int dataLength = byteBuf.getInt(byteBuf.readerIndex());
+
+        if(byteBuf.readableBytes() < dataLength + 4){
+            return;
+        }
+
+        byteBuf.skipBytes(4);
 
         RequestMessage request = new RequestMessage();
         request.read(byteBuf);
